@@ -1,5 +1,4 @@
 import json
-from os import listdir
 from pathlib import Path
 
 import click
