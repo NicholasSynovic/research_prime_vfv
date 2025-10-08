@@ -13,7 +13,10 @@ classifiers = [
 ]
 dependencies = [
     "click>=8.3.0",
+    "matplotlib>=3.10.6",
     "pandas>=2.3.2",
+    "progress>=1.6.1",
+    "seaborn>=0.13.2",
     "sqlalchemy>=2.0.43",
 ]
 

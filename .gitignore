@@ -165,3 +165,4 @@ build-docs/*
 *.xml
 *.sqlite3
 *.csv
+*.pdf
