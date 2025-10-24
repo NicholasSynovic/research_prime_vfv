@@ -10,16 +10,6 @@ from pandas.core.groupby import DataFrameGroupBy, Grouper
 from progress.bar import Bar
 from sqlalchemy import Engine, create_engine
 
-COMMIT_1: Timestamp = Timestamp(ts_input="02-02-2016")
-COMMIT_2: Timestamp = Timestamp(ts_input="06-02-2016")
-
-STARTING_DATE: Timestamp = (
-    Timestamp(ts_input="02-02-2016") - pandas.Timedelta(weeks=3)
-).floor("D")
-ENDING_DATE: Timestamp = (
-    Timestamp(ts_input="06-02-2016") + pandas.Timedelta(weeks=3)
-).floor("D")
-
 
 def read_csv(fp: Path, sep: str = "|") -> DataFrame:
     df: DataFrame = pandas.read_csv(filepath_or_buffer=fp, sep=sep)
@@ -251,7 +241,7 @@ def plot(
         labels[0] = (
             f"{(start_ts - pandas.Timedelta(weeks=ts_offset)).strftime(format='%m-%d-%y')}"
         )
-        labels[3] = f"{COMMIT_1.strftime(format='%m-%d-%y')}"
+        labels[3] = f"{start_ts.strftime(format='%m-%d-%y')}"
         labels[yellow_highlight_end] = f"{end_ts.strftime(format='%m-%d-%y')}"
         ax.set_xticklabels(labels, rotation=45, ha="right")
 
