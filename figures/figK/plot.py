@@ -282,7 +282,7 @@ def plot(df1: DataFrame, df2: DataFrame, df3: DataFrame) -> None:
     # Adjust layout and spacing
     # Write the figure to disk
     plt.tight_layout()
-    plt.savefig(f"figK.png")
+    plt.savefig(f"figK.pdf")
     plt.clf()
     plt.close()
 
