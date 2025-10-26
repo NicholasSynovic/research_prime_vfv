@@ -56,6 +56,9 @@ def compute(df: DataFrame) -> DataFrame:
     df_group: DataFrame
     ts: Timestamp
     for ts, df_group in dfgb:
+        if ts > Timestamp.now():
+            break
+
         latest_df: DataFrame = df_group.tail(n=1)
         kloc: float = latest_df["code"].item() / 1000
         value: float = latest_df["open_events"].item() / kloc
@@ -130,10 +133,81 @@ def compute_cve(
 #     plt.close()
 
 
-def plot(df1: DataFrame, df2: DataFrame, df3: DataFrame) -> None:
+def _subplot(ax, df: DataFrame, title: str) -> None:
+    # Modfies ax in place
+    sns.barplot(data=df, x=df.index, y="value", ax=ax, color="steelblue")
+    ax.set_title(title)
+    ax.set_xlabel(xlabel="Week")
+    ax.set_ylabel(ylabel="Pull Request Spoilage")
+
+    vuln_start: int = COMPUTE_WEEK_0_INDEX(df=df)
+    vuln_end: int = COMPUTE_WEEK_N_INDEX(df=df)
+    end_of_range: float = COMPUTE_RANGE_END(df=df)
+
+    highlight_ranges: list[tuple[float, float, str, str]] = [
+        (-0.5, vuln_start, "yellow", "Prior To Risky Fix"),
+        (vuln_start, vuln_end, "lightcoral", "Post Risky Fix"),
+        (vuln_end, end_of_range, "seagreen", "Post Corrective Fix"),
+    ]
+
+    # Store patches into the `handles` variable
+    handles: list = []
+    start: float
+    end: float
+    color: str
+    for start, end, color, patch_label in highlight_ranges:
+        patch = ax.axvspan(
+            start,
+            end,
+            color=color,
+            alpha=0.75,
+            zorder=0,
+            label=patch_label,
+        )
+        handles.append(patch)
+
+    # Plot the legend
+    ax.legend(handles=handles, loc="lower right", framealpha=1, frameon=True)
+
+    # Get the list of x-axis labels
+    labels: list[str] = []
+    tick_counter: int = 0
+    for _ in ax.get_xticklabels():
+        labels.append(str(tick_counter))
+        tick_counter += 1
+
+    # If there are labels, set specific label indicies to be the dates for the
+    # range start, introduction of the vulnerability, and the fix
+    # TODO: Make sure that the labels align with the proper dates
+    if labels:
+        labels[0] = f"{df['date'].iloc[0].strftime(format='%m-%d-%y')}"
+        labels[vuln_start] = (
+            f"{df['date'].iloc[vuln_start].strftime(format='%m-%d-%y')}"
+        )
+        labels[vuln_end] = f"{df['date'].iloc[vuln_end].strftime(format='%m-%d-%y')}"
+
+    # Rotate ticks that are dates
+    ax.set_xticklabels(labels)
+    for tick in ax.get_xticklabels():
+        try:
+            int(tick.get_text())
+            tick.set_visible(b=False)
+        except ValueError:
+            tick.set_visible(b=True)
+            tick.set_rotation(s=45)
+            tick.set_horizontalalignment(align="right")
+
+
+def plot(
+    df1: DataFrame,
+    df2: DataFrame,
+    df3: DataFrame,
+    df4: DataFrame,
+    df5: DataFrame,
+) -> None:
     # Create the figure
     fig = plt.figure(figsize=(10, 6))
-    gs = GridSpec(2, 2, height_ratios=[1, 2], figure=fig)  # Top is taller
+    gs = GridSpec(2, 4, height_ratios=[1, 2], figure=fig)  # Top is taller
 
     # --- Top wide plot (spans both columns)
     ax1 = fig.add_subplot(gs[0, :])
@@ -144,143 +218,22 @@ def plot(df1: DataFrame, df2: DataFrame, df3: DataFrame) -> None:
     ax1.set_ylabel(ylabel="Issue Density")
 
     # --- Bottom left plot
-
     ax2 = fig.add_subplot(gs[1, 0])
-    sns.barplot(data=df2, x=df2.index, y="value", ax=ax2, color="steelblue")
-    ax2.set_title("CVE-2016-4564 Issue Density")
-    ax2.set_xlabel(xlabel="Week")
-    ax2.set_ylabel(ylabel="Issue Density")
+    _subplot(ax=ax2, df=df2, title="CVE-2016-4564")
 
-    vuln_start: int = COMPUTE_WEEK_0_INDEX(df=df2)
-    vuln_end: int = COMPUTE_WEEK_N_INDEX(df=df2)
-    end_of_range: float = COMPUTE_RANGE_END(df=df2)
-
-    highlight_ranges: list[tuple[float, float, str, str]] = [
-        (-0.5, vuln_start, "yellow", "Prior To Risky Fix"),
-        (vuln_start, vuln_end, "lightcoral", "Post Risky Fix"),
-        (vuln_end, end_of_range, "seagreen", "Post Corrective Fix"),
-    ]
-
-    # Store patches into the `handles` variable
-    handles: list = []
-    start: float
-    end: float
-    color: str
-    for start, end, color, patch_label in highlight_ranges:
-        patch = ax2.axvspan(
-            start,
-            end,
-            color=color,
-            alpha=0.75,
-            zorder=0,
-            label=patch_label,
-        )
-        handles.append(patch)
-
-    # Plot the legend
-    ax2.legend(handles=handles, loc="lower right", framealpha=1, frameon=True)
-
-    # Get the list of x-axis labels
-    labels: list[str] = []
-    tick_counter: int = 0
-    for _ in ax2.get_xticklabels():
-        labels.append(str(tick_counter))
-        tick_counter += 1
-
-    # If there are labels, set specific label indicies to be the dates for the
-    # range start, introduction of the vulnerability, and the fix
-    # TODO: Make sure that the labels align with the proper dates
-    if labels:
-        labels[0] = f"{df2['date'].iloc[0].strftime(format='%m-%d-%y')}"
-        labels[vuln_start] = (
-            f"{df2['date'].iloc[vuln_start].strftime(format='%m-%d-%y')}"
-        )
-        labels[vuln_end] = f"{df2['date'].iloc[vuln_end].strftime(format='%m-%d-%y')}"
-
-    # Rotate ticks that are dates
-    ax2.set_xticklabels(labels)
-    for tick in ax2.get_xticklabels():
-        try:
-            int(tick.get_text())
-        except ValueError:
-            tick.set_visible(b=True)
-            tick.set_rotation(s=45)
-            tick.set_horizontalalignment(align="right")
-
-    # --- Bottom right plot
+    # --- Bottom center left plot
     ax3 = fig.add_subplot(gs[1, 1])
-    sns.barplot(data=df3, x=df3.index, y="value", ax=ax3, color="steelblue")
-    ax3.set_title("CVE-2019-13299 Issue Density")
-    ax3.set_xlabel(xlabel="Week")
-    ax3.set_ylabel(ylabel="Issue Density")
+    _subplot(ax=ax3, df=df3, title="CVE-2017-16546")
 
-    vuln_start: int = COMPUTE_WEEK_0_INDEX(df=df3)
-    vuln_end: int = COMPUTE_WEEK_N_INDEX(df=df3)
-    end_of_range: float = COMPUTE_RANGE_END(df=df3)
+    # --- Bottom center left plot
+    ax4 = fig.add_subplot(gs[1, 2])
+    _subplot(ax=ax4, df=df4, title="CVE-2018-11625")
 
-    highlight_ranges: list[tuple[float, float, str, str]] = [
-        (-0.5, vuln_start, "yellow", "Prior To Risky Fix"),
-        (vuln_start, vuln_end, "lightcoral", "Post Risky Fix"),
-        (vuln_end, end_of_range, "seagreen", "Post Corrective Fix"),
-    ]
+    # --- Bottom center left plot
+    ax5 = fig.add_subplot(gs[1, 3])
+    _subplot(ax=ax5, df=df5, title="CVE-2019-13299")
 
-    # Store patches into the `handles` variable
-    handles: list = []
-    start: float
-    end: float
-    color: str
-    for start, end, color, patch_label in highlight_ranges:
-        patch = ax3.axvspan(
-            start,
-            end,
-            color=color,
-            alpha=0.75,
-            zorder=0,
-            label=patch_label,
-        )
-        handles.append(patch)
-
-    # Plot the legend
-    ax3.legend(handles=handles, loc="lower right", framealpha=1, frameon=True)
-
-    # Get the list of x-axis labels
-    labels: list[str] = []
-    tick_counter: int = 0
-    for _ in ax3.get_xticklabels():
-        labels.append(str(tick_counter))
-        tick_counter += 1
-
-    # If there are labels, set specific label indicies to be the dates for the
-    # range start, introduction of the vulnerability, and the fix
-    # TODO: Make sure that the labels align with the proper dates
-    if labels:
-        labels[0] = f"{df3['date'].iloc[0].strftime(format='%m-%d-%y')}"
-        labels[vuln_start] = (
-            f"{df3['date'].iloc[vuln_start].strftime(format='%m-%d-%y')}"
-        )
-        labels[vuln_end] = f"{df3['date'].iloc[vuln_end].strftime(format='%m-%d-%y')}"
-
-    # Rotate ticks that are dates
-    ax3.set_xticklabels(labels)
-    for tick in ax3.get_xticklabels():
-        try:
-            int(tick.get_text())
-        except ValueError:
-            tick.set_rotation(s=45)
-            tick.set_horizontalalignment(align="right")
-        else:
-            tick_value: int = int(tick.get_text())
-            if tick_value % 2 == 1:
-                tick.set_visible(b=False)
-
-            if vuln_start - tick_value > 0:
-                tick.set_visible(b=False)
-
-            if vuln_end - 1 == tick_value:
-                tick.set_visible(b=False)
-
-    # Adjust layout and spacing
-    # Write the figure to disk
+    # Adjust layout and spacing and write the figure to disk
     plt.tight_layout()
     plt.savefig(f"figK.pdf")
     plt.clf()
@@ -308,12 +261,28 @@ def main(db_path: Path) -> None:
     )  # CVE-2016-4564, 9.8 CVSS
     cve_2_metric: DataFrame = compute_cve(
         df=id_df,
+        start_ts_str="11-04-2017",
+        end_ts_str="03-14-2018",
+    )  # CVE-2017-16546, 8.8 CVSS
+    cve_3_metric: DataFrame = compute_cve(
+        df=id_df,
+        start_ts_str="05-30-2018",
+        end_ts_str="04-08-2019",
+    )  # CVE-2018-11625, CVSS 8.8
+    cve_4_metric: DataFrame = compute_cve(
+        df=id_df,
         start_ts_str="06-23-2019",
         end_ts_str="01-10-2020",
     )  # CVE-2019-13299, 8.8 CVSS
 
     # Plot per metric
-    plot(df1=project_metric, df2=cve_1_metric, df3=cve_2_metric)
+    plot(
+        df1=project_metric,
+        df2=cve_1_metric,
+        df3=cve_2_metric,
+        df4=cve_3_metric,
+        df5=cve_4_metric,
+    )
 
 
 if __name__ == "__main__":
