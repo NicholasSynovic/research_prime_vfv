@@ -166,3 +166,4 @@ build-docs/*
 *.sqlite3
 *.csv
 *.pdf
+*.png

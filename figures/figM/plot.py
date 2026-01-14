@@ -5,6 +5,7 @@ import click
 import matplotlib.pyplot as plt
 import pandas
 import seaborn as sns
+from matplotlib.axes import Axes
 from matplotlib.gridspec import GridSpec
 from numpy import ndarray
 from pandas import DataFrame, Series, Timestamp
@@ -12,7 +13,7 @@ from pandas.core.groupby import DataFrameGroupBy, Grouper
 from progress.bar import Bar
 from sqlalchemy import Engine, create_engine
 
-TS_WEEK_OFFSET: int = 3
+TS_WEEK_OFFSET: int = 20
 COMPUTE_WEEK_0_INDEX = lambda df: df[
     df["date"]
     == df["date"].iloc[0]
@@ -95,21 +96,30 @@ def compute_cve(
     return DataFrame(data=data)
 
 
-def _subplot(ax, df: DataFrame, title: str) -> None:
+def _subplot(
+    ax: Axes,
+    df: DataFrame,
+    title: str,
+    hide_xaxis: bool = False,
+    hide_yaxis: bool = False,
+    _rotate: bool = False,
+    show_legend: bool = False,
+    _shift_labels: bool = False,  # <--- NEW ARGUMENT
+) -> None:
     # Modfies ax in place
     sns.barplot(data=df, x=df.index, y="value", ax=ax, color="steelblue")
     ax.set_title(title)
     ax.set_xlabel(xlabel="Week")
-    ax.set_ylabel(ylabel="Issue Spoilage")
+    ax.set_ylabel(ylabel="Issue Density")
 
     vuln_start: int = COMPUTE_WEEK_0_INDEX(df=df)
     vuln_end: int = COMPUTE_WEEK_N_INDEX(df=df)
     end_of_range: float = COMPUTE_RANGE_END(df=df)
 
     highlight_ranges: list[tuple[float, float, str, str]] = [
-        (-0.5, vuln_start, "yellow", "Prior To Risky Fix"),
-        (vuln_start, vuln_end, "lightcoral", "Post Risky Fix"),
-        (vuln_end, end_of_range, "seagreen", "Post Corrective Fix"),
+        (-0.5, vuln_start, "yellow", "Prior To Reintroduction."),
+        (vuln_start, vuln_end, "lightcoral", "Post Reintroduction."),
+        (vuln_end, end_of_range, "seagreen", "Post Correction"),
     ]
 
     # Store patches into the `handles` variable
@@ -129,35 +139,76 @@ def _subplot(ax, df: DataFrame, title: str) -> None:
         handles.append(patch)
 
     # Plot the legend
-    ax.legend(handles=handles, loc="lower right", framealpha=1, frameon=True)
+    if show_legend:
+        ax.legend(
+            handles=handles,
+            loc="lower right",
+            fontsize=8,  # smaller text
+            frameon=True,  # show frame
+            framealpha=1,  # slightly transparent
+            handlelength=1.0,  # shorten line handles
+            handletextpad=0.3,  # reduce space between line and text
+            borderaxespad=0.2,  # reduce padding between axes and legend
+            fancybox=True,  # rounded box
+            borderpad=0.2,  # padding inside box
+        )
 
     # Get the list of x-axis labels
     labels: list[str] = []
     tick_counter: int = 0
-    for _ in ax.get_xticklabels():
+    # Collect the tick objects for later manipulation
+    tick_objects = ax.get_xticklabels()
+    for _ in tick_objects:
         labels.append(str(tick_counter))
         tick_counter += 1
 
     # If there are labels, set specific label indicies to be the dates for the
     # range start, introduction of the vulnerability, and the fix
-    # TODO: Make sure that the labels align with the proper dates
     if labels:
         labels[0] = f"{df['date'].iloc[0].strftime(format='%m-%d-%y')}"
         labels[vuln_start] = (
             f"{df['date'].iloc[vuln_start].strftime(format='%m-%d-%y')}"
         )
         labels[vuln_end] = f"{df['date'].iloc[vuln_end].strftime(format='%m-%d-%y')}"
+        labels[-1] = f"{df['date'].iloc[-1].strftime('%m-%d-%y')}"
 
-    # Rotate ticks that are dates
+    # Apply all labels at once
     ax.set_xticklabels(labels)
-    for tick in ax.get_xticklabels():
+
+    # Iterate through the updated tick objects for formatting
+    for idx, tick in enumerate(ax.get_xticklabels()):
         try:
             int(tick.get_text())
             tick.set_visible(b=False)
         except ValueError:
             tick.set_visible(b=True)
-            tick.set_rotation(s=45)
-            tick.set_horizontalalignment(align="right")
+            if _rotate:
+                # Retain rotation option, although not used in final fix
+                tick.set_rotation(s=20)
+                tick.set_horizontalalignment(align="right")
+                tick.set_y(-0.01)
+
+            # --- KEY CHANGE: Selective horizontal shift to prevent overlap
+            if _shift_labels:
+                # Shift the start date slightly to the left
+                if idx == vuln_start:
+                    # '0.2' is an arbitrary value that likely clears the overlap
+                    x_shift = tick.get_position()[0] - 0.2
+                    tick.set_x(x_shift)
+                    # Align to the right for a clean look
+                    tick.set_horizontalalignment("right")
+                # Shift the end date slightly to the right
+                elif idx == vuln_end:
+                    x_shift = tick.get_position()[0] + 0.2
+                    tick.set_x(x_shift)
+                    # Align to the left for a clean look
+                    tick.set_horizontalalignment("left")
+
+    if hide_xaxis:
+        ax.set_xlabel(xlabel="")
+
+    if hide_yaxis:
+        ax.set_ylabel(ylabel="")
 
 
 def plot(
@@ -167,9 +218,11 @@ def plot(
     df4: DataFrame,
     df5: DataFrame,
 ) -> None:
+    print(df1.iloc[-1])
+
     # Create the figure
     fig = plt.figure(figsize=(10, 6))
-    gs = GridSpec(2, 4, height_ratios=[1, 2], figure=fig)  # Top is taller
+    gs = GridSpec(3, 2, figure=fig, hspace=0.55)  # Top is taller
 
     # --- Top wide plot (spans both columns)
     ax1 = fig.add_subplot(gs[0, :])
@@ -178,26 +231,32 @@ def plot(
     ax1.set_title("ImageMagick Issue Spoilage")
     ax1.set_xlabel(xlabel="Year")
     ax1.set_ylabel(ylabel="Issue Spoilage")
+    ax1.set
+    # --- Middle left plot
+    ax2 = fig.add_subplot(gs[1, 0])
+    _subplot(
+        ax=ax2,
+        df=df2,
+        title="CVE-2016-4564",
+        hide_xaxis=True,
+        _shift_labels=True,  # <--- Enable label shifting here
+    )
+
+    # --- Middle right plot
+    ax3 = fig.add_subplot(gs[1, 1])
+    _subplot(ax=ax3, df=df3, title="CVE-2017-16546", hide_xaxis=True, hide_yaxis=True)
 
     # --- Bottom left plot
-    ax2 = fig.add_subplot(gs[1, 0])
-    _subplot(ax=ax2, df=df2, title="CVE-2016-4564")
-
-    # --- Bottom center left plot
-    ax3 = fig.add_subplot(gs[1, 1])
-    _subplot(ax=ax3, df=df3, title="CVE-2017-16546")
-
-    # --- Bottom center left plot
-    ax4 = fig.add_subplot(gs[1, 2])
+    ax4 = fig.add_subplot(gs[2, 0])
     _subplot(ax=ax4, df=df4, title="CVE-2018-11625")
 
-    # --- Bottom center left plot
-    ax5 = fig.add_subplot(gs[1, 3])
-    _subplot(ax=ax5, df=df5, title="CVE-2019-13299")
+    # --- Bottom right plot
+    ax5 = fig.add_subplot(gs[2, 1])
+    _subplot(ax=ax5, df=df5, title="CVE-2019-13299", hide_yaxis=True, show_legend=True)
 
     # Adjust layout and spacing and write the figure to disk
     plt.tight_layout()
-    plt.savefig(f"figM.pdf")
+    plt.savefig(f"figM.pdf", bbox_inches="tight", pad_inches=0)
     plt.clf()
     plt.close()
 
