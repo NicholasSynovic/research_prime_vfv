@@ -1,20 +1,35 @@
-# PRIME + VFV Research
+# Process-based Indicators of Vulnerability Re-Introducing Code Changes: An Exploratory Case Study
 
-> Correlating risky-fix vulnerabilities to software engineering processes
+> Correlating software engineering process metrics to software vulnerability
+> reintroduction
+
+![arXiv](https://img.shields.io/badge/arXiv-10.48550%2FarXiv.2510.26676-red?link=https://arxiv.org/abs/2510.26676)
 
 ## Table of Contents
 
-- [PRIME + VFV Research](#prime--vfv-research)
+- [Process-based Indicators of Vulnerability Re-Introducing Code Changes: An Exploratory Case Study](#process-based-indicators-of-vulnerability-re-introducing-code-changes-an-exploratory-case-study)
   - [Table of Contents](#table-of-contents)
   - [About](#about)
-  - [Getting Started](#getting-started)
+    - [Pre-Print Paper Abstract](#pre-print-paper-abstract)
+  - [Running The Project](#running-the-project)
+    - [Dependencies](#dependencies)
+    - [Steps](#steps)
 
 ## About
 
-> From our paper's abstract. Read the arXiv preprint
+This repository hosts the necessary code to replicate our study *Process-based
+Indicators of Vulnerability Re-Introducing Code Changes: An Exploratory Case
+Study*.
+
+✨This work was accepted to the
+[**Software Vulnerability Management (SVM) Workshop @ ICSE '26**](https://conf.researchr.org/home/icse-2026/svm-2026)✨
+
+### Pre-Print Paper Abstract
+
+> Taken from our paper's abstract. Read the arXiv preprint
 > [here](https://arxiv.org/abs/2510.26676)
 
-Software vulnerabilities often persist or re-emerge even after being fixed,
+*Software vulnerabilities often persist or re-emerge even after being fixed,
 revealing the complex interplay between code evolution and socio-technical
 factors. While source code metrics provide useful indicators of vulnerabilities,
 software engineering process metrics can uncover patterns that lead to their
@@ -36,13 +51,44 @@ reintroductions often align with increased issue spoilage and fluctuating issue
 density, reflecting short-term inefficiencies in issue management and team
 responsiveness. These observations provide a foundation for broader studies that
 combine process and code metrics to predict risky fixes and strengthen software
-security.
+security.*
 
-## Getting Started
+## Running The Project
 
-1. Create Python virtual environment: `make create-dev`
-1. Sync submodules: `git submodule update --init --recursive`
-1. Download data: `./scripts/download_cwe_list_4.17.bash`
-1. Extract VulFixVul projects to JSON:
-   `python scripts/extract_repos_from_vfv.py -i VulnerabilityReintroducingDataset/merged_dataset_with_CVE_CWE.csv -o vfv.json`
-1. Clone repos: `./scripts/clone_vfv_repos.bash vfv.json`
+### Dependencies
+
+Our work relies on:
+
+- Python 3.13.9,
+- [CWE Version 4.17](https://cwe.mitre.org/data/xml/cwec_v4.17.xml.zip),
+- [CVEProject/cvelistV5 @ 0d9f00ef6f76fd013e7bcd2bc85580920f20a595](https://github.com/CVEProject/cvelistV5/tree/0d9f00ef6f76fd013e7bcd2bc85580920f20a595),
+  and
+- [anonSubmissionGithub/VulnerabilityReintroducingDataset @ ea86ca55363e905af504a0d6242681ae3f184f83](https://github.com/anonSubmissionGithub/VulnerabilityReintroducingDataset/tree/ea86ca55363e905af504a0d6242681ae3f184f83).
+
+<!-- TODO: Add Zenodo release link -->
+
+Datasets are availible for downloading from our [Zenodo] release.
+
+### Steps
+
+> Relies on downloading the latest Zenodo release
+
+1. Clone the
+   [`ImageMagick/ImageMagick`](https://github.com/ImageMagick/ImageMagick.git)
+   `git` repository
+
+```bash
+git clone https://github.com/ImageMagick/ImageMagick.git
+```
+
+2. Create the virtual environment
+
+```bash
+make create-dev
+```
+
+3. Build the project
+
+```bash
+make build
+```

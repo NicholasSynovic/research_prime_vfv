@@ -1,6 +1,6 @@
 [submodule "VulnerabilityReintroducingDataset"]
-	path = VulnerabilityReintroducingDataset
+	path = data/vfv
 	url = https://github.com/anonSubmissionGithub/VulnerabilityReintroducingDataset
 [submodule "cvelistV5"]
-	path = cvelistV5
+	path = data/cves
 	url = https://github.com/CVEProject/cvelistV5
