@@ -10,6 +10,7 @@
   - [Computing Number Of VFV Identified Commits per Year](#computing-number-of-vfv-identified-commits-per-year)
   - [Computing Number Of VFV CWEs per Year](#computing-number-of-vfv-cwes-per-year)
   - [Computing Time Between Commits](#computing-time-between-commits)
+  - [Compute Issue Spoilage](#compute-issue-spoilage)
 
 ## About
 
@@ -62,4 +63,12 @@ python scripts/vfv_imagemagick_time_between_commits.py \
   --repo ~/Documents/.temp/ImageMagick \
   --input vfv_imagemagick_commits.csv \
   --output vfv_imagemagick_time_between_commits.csv
+```
+
+## Compute Issue Spoilage
+
+```bash
+python scripts/prime_imagemagick_issue_spoilage.py \
+  --input vfv_imagemagick_issues.csv \
+  --output prime_imagemagick_issue_spoilage.csv
 ```
