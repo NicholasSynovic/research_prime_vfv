@@ -16,12 +16,12 @@ jq -r '.[].url' "$VFV_JSON_FILE" | sort -u | while read -r url; do
     else
         scorecard \
             --format json \
-            --output ${author}_${repo}.json \
+            --output ../openssf_scorecard/${author}_${repo}.json \
             --repo $url
     fi;
 done
 
 for file in $(ls *.json); do
     score=$(jq .score $file)
-    echo ${file},${score} >> openssf_scores.csv
+    echo ${file},${score} >> ../openssf_scorecard.csv
 done

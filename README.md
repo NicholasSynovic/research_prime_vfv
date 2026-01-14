@@ -60,6 +60,7 @@ security.*
 Our work relies on:
 
 - Python 3.13.9,
+- OpenSSF Scorecard v5.3.0,
 - [CWE Version 4.17](https://cwe.mitre.org/data/xml/cwec_v4.17.xml.zip),
 - [CVEProject/cvelistV5 @ 0d9f00ef6f76fd013e7bcd2bc85580920f20a595](https://github.com/CVEProject/cvelistV5/tree/0d9f00ef6f76fd013e7bcd2bc85580920f20a595),
   and

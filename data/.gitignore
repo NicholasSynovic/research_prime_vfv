@@ -1,2 +1,10 @@
 !cwec_v4.17.xml
 !vfv_repositories_cwe_cve.json
+!vfv_imagemagick_commits.csv
+!vfv_imagemagick_issues.csv
+!vfv_imagemagick_pull-requests.csv
+!openssf_scorecard/*.json
+!openssf_scorecard.csv
+!vfv_imagemagick_commits_per_year.csv
+!vfv_imagemagick_cwes_per_year.csv
+!vfv_imagemagick_time_between_commits.csv

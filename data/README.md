@@ -7,6 +7,9 @@
   - [About](#about)
   - [Downloading Common Weakness Enumeration (CWE) Version 4.17 Data](#downloading-common-weakness-enumeration-cwe-version-417-data)
   - [Extracting Repository, CWE, and CVE Pairs From VFV](#extracting-repository-cwe-and-cve-pairs-from-vfv)
+  - [Computing Number Of VFV Identified Commits per Year](#computing-number-of-vfv-identified-commits-per-year)
+  - [Computing Number Of VFV CWEs per Year](#computing-number-of-vfv-cwes-per-year)
+  - [Computing Time Between Commits](#computing-time-between-commits)
 
 ## About
 
@@ -32,4 +35,31 @@ unzip cwec.zip
 python scripts/vfv_repositories_cwe_cve.py \
   --input vfv/merged_dataset_with_CVE_CWE.csv \
   --output vfv_repositories_cwe_cve.json
+```
+
+## Computing Number Of VFV Identified Commits per Year
+
+```bash
+python scripts/vfv_imagemagick_commits_per_year.py \
+  --repo ~/Documents/.temp/ImageMagick \
+  --input vfv_imagemagick_commits.csv \
+  --output vfv_imagemagick_commits_per_year.csv
+```
+
+## Computing Number Of VFV CWEs per Year
+
+```bash
+python scripts/vfv_imagemagick_cwes_per_year.py \
+  --repo ~/Documents/.temp/ImageMagick \
+  --input vfv_imagemagick_commits.csv \
+  --output vfv_imagemagick_cwes_per_year.csv
+```
+
+## Computing Time Between Commits
+
+```bash
+python scripts/vfv_imagemagick_time_between_commits.py \
+  --repo ~/Documents/.temp/ImageMagick \
+  --input vfv_imagemagick_commits.csv \
+  --output vfv_imagemagick_time_between_commits.csv
 ```
