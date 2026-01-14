@@ -1,14 +1,14 @@
 [project]
 name = "prime_vfv"
-version = "1.0.0"
-description = "PRIME + Vul-Fix-Vul research"
+version = "1.1.0"
+description = " Correlating software engineering process metrics to software vulnerability reintroduction"
 authors = [{ name = "Nicholas M. Synovic", email = "nicholas.synovic@gmail.com" }]
 requires-python = "~=3.13"
 readme = "README.md"
 keywords = ["Template"]
 classifiers = [
     "Development Status :: 1 - Planning",
-    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "License :: OSI Approved :: BSD 3-Clause",
     "Programming Language :: Python :: 3.13"
 ]
 dependencies = [
@@ -22,8 +22,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/NicholasSynovic/template_python"
-Repository = "https://github.com/NicholasSynovic/template_python"
+Homepage = "https://github.com/NicholasSynovic/research_prime_vfv"
+Repository = "https://github.com/NicholasSynovic/research_prime_vfv"
 
 [build-system]
 requires = ["hatchling"]
