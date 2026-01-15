@@ -89,8 +89,12 @@ git clone https://github.com/ImageMagick/ImageMagick.git
 make create-dev
 ```
 
-3. Build the project
+3. Download the pre-computed `prime_imagemagick.sqlite3` database from Zenodo.
 
-```bash
-make build
+```text
+https://zenodo.org/records/18251736/files/prime_imagemagick.sqlite3?download=1
 ```
+
+4. Recreate any additional data files using the instructions in
+   [`data/README.md`](data/README.md).
+1. Reproduce figures via the Python scripts in [`figures`](figures/)
