@@ -1,0 +1,16 @@
+{
+    "upload_type": "software",
+    "title": "NicholasSynovic/research_prime_vfv",
+    "creators": [
+        {
+            "name": "Synovic, Nicholas",
+            "affiliation": "Loyola University Chicago",
+            "orcid": "0000-0003-0413-4594"
+        }
+    ],
+    "description": "Code to replicate",
+    "access_right": "open",
+    "license": "BSD-3-Clause",
+    "prereserve_doi": true,
+    "keywords": []
+}

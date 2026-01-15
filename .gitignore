@@ -167,3 +167,4 @@ build-docs/*
 *.csv
 *.pdf
 *.png
+!.zenodo.json
