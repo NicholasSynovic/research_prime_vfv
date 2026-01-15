@@ -4,6 +4,7 @@
 > reintroduction
 
 ![arXiv](https://img.shields.io/badge/arXiv-10.48550%2FarXiv.2510.26676-red?link=https://arxiv.org/abs/2510.26676)
+[![Zenodo DOI](https://img.shields.io/badge/Zenodo-10.5281%2Fzenodo.18251736-blue)](https://doi.org/10.5281/zenodo.18251736)
 
 ## Table of Contents
 

@@ -1,1 +1,20 @@
-# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-citation-files
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Samiha"
+  given-names: "Shimmi"
+  orcid: "https://orcid.org/0000-0002-5307-8819"
+- family-names: "Synovic"
+  given-names: "Nicholas"
+  orcid: "https://orcid.org/0000-0003-0413-4594"
+- family-names: "Rahimi"
+  given-names: "Mona"
+  orcid: "https://orcid.org/0000-0001-7228-7520"
+- family-names: "Thiruvathukal"
+  given-names: "George K."
+  orcid: "https://orcid.org/0000-0002-0452-5571"
+title: "Process-based Indicators of Vulnerability Re-Introducing Code Changes: An Exploratory Case Study"
+version: 1.1.2
+doi: 10.5281/zenodo.18251736
+date-released: 2026-01-15
+url: "https://doi.org/10.5281/zenodo.18251736"
